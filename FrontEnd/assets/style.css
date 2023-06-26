@@ -3,15 +3,15 @@
    License: none (public domain)
 */
 
-html, body, div, span, applet, object, iframe,
+html, .main-container, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
 del, dfn, em, img, ins, kbd, q, s, samp,
 small, strike, strong, sub, sup, tt, var,
 b, u, i, center,
 dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
+fieldset, form, label, legend, body,
+table, caption, t.main-container, tfoot, thead, tr, th, td,
 article, aside, canvas, details, embed,
 figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
@@ -23,12 +23,15 @@ time, mark, audio, video {
 	font: inherit;
 	vertical-align: baseline;
 }
+* {
+	text-decoration: none;
+}
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
 	display: block;
 }
-body {
+.main-container {
 	line-height: 1;
 }
 ol, ul {
@@ -47,7 +50,7 @@ table {
 	border-spacing: 0;
 }
 /** end reset css**/
-body {
+.main-container {
 	max-width: 1140px;
 	margin:auto;
 	font-family: 'Work Sans' ;
@@ -61,7 +64,120 @@ header {
 section {
 	margin: 50px 0
 }
-
+#edit {
+	width: 100%;
+	height: 55px;
+	background-color: black;
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: 'Work Sans';
+	gap: 20px;
+}
+#button-publish {
+	border: 1px;
+	background-color: white;
+	width: 185px;
+	height: 35px;
+	border-radius: 60px;
+	font-size: 14px;
+	cursor: pointer;
+}
+#mode-edit {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	cursor: pointer;
+	text-decoration: none;
+  color: white;
+}
+.modal {
+	position: fixed;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.8);
+	font-family: 'Work Sans';
+}
+.modal-wrapper {
+	overflow: auto;
+	max-width: calc(100vw - 120px);
+	max-height: calc(100vh - 120px);
+	width: 630px;
+	border-radius: 10px;
+	padding: 30px 105px 50px;
+	background-color: white;
+}
+#modal-xmark {
+	display: flex;
+  justify-content: end;
+  margin-bottom: 20px;
+  font-size: 23px;
+  color: black;
+	cursor: pointer;
+}
+#title-modal {
+	text-align: center;
+	font-size: 26px;
+	margin-bottom: 55px;
+}
+#gallery-modal {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 25px;
+	margin-bottom: 40px;
+	border-bottom: solid 1px #B3B3B3;
+}
+.item-modal {
+	display: flex;
+	flex-direction: column;
+	position: relative;
+}
+.image-modal {
+	width: 100px;
+}
+.delete-gallery-modal {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: black;
+	border-radius: 2px;
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	width: 25px;
+	height: 25px;
+	cursor: pointer;
+}
+.trash-modal {
+	color: white;
+}
+#button-add-picture {
+	display: flex;
+	margin: auto;
+	border: 1px;
+	font-size: 14px;
+	width: 185px;
+	height: 35px;
+	border-radius: 60px;
+	background-color: #1D6154;
+	color: white;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 30px;
+}
+#delete-gallery {
+	text-align: center;
+	color: #D65353;
+	font-size: 14px;
+}
 h1{
 	display: flex;
 	flex-direction: column;
@@ -98,6 +214,11 @@ nav li {
 li:hover {
 	color: #B1663C;
 }
+
+li a:hover {
+	color: #B1663C;
+}
+
 #introduction {
 	display: flex;
 	align-items: center;
@@ -110,7 +231,13 @@ li:hover {
 	margin: auto;
 	width: 80%;
 }
-
+#edit-picture {
+	display: flex;
+	gap: 5px;
+	cursor: pointer;
+	margin-left: 57px;
+	margin-top: 15px;
+}
 #introduction article {
 	flex: 1
 }
@@ -121,9 +248,21 @@ li:hover {
 #introduction p {
 	margin-bottom: 0.5em;
 }
+#h2-edit {
+	display: flex;
+	align-items: baseline;
+	justify-content: center;
+	gap: 2em;
+}
 #portfolio h2 {
 	text-align: center;
 	margin-bottom: 1em;
+	margin-left: 3em;
+}
+#edit-gallery {
+	display: flex;
+	gap: 5px;
+	cursor: pointer;
 }
 .filters {
 	margin-top: 50px;
@@ -208,4 +347,3 @@ footer nav ul {
 	justify-content: flex-end;
 	margin: 2em
 }
-
