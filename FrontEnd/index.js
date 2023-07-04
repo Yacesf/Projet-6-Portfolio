@@ -47,7 +47,8 @@ function loadCategories() {
   for (let i = 0; i < 3 && i < articles.length; i++) {
     const article = articles[i];
     const category = article.category;
-    categories.add(category);}
+    categories.add(category);
+  }
   for (let category of categories) {
     filters.innerHTML += `<div class="filter ${category.id}">${category.name}</div>`;
   }
@@ -172,9 +173,7 @@ const token = localStorage.getItem("token");
 console.log(token);
 
 galleryModal.addEventListener("click", async function (e) {
-  if (e.target.classList.contains(".trash-modal"))
-    console.log(e.target.classList.contains(".trash-modal"));
-  {
+  if (e.target.classList.contains("trash-modal")) {
     const figure = e.target.closest("figure");
     const articleId = figure.dataset.id;
     console.log(articleId);
@@ -215,7 +214,7 @@ buttonModalAddPicture.addEventListener("click", changeModal);
 
 const backToModalDelete = document.querySelector("#back-to-modal-delete")
 
-function changeModalBack () {
+function changeModalBack() {
   modalAdd.style.display = "none";
   modalDelete.style.display = "flex";
 }
@@ -226,10 +225,10 @@ const fileInput = document.querySelector("#button-add-picture-input");
 const imagePreview = document.querySelector("#image-modal-add");
 const imageSelected = document.querySelector("#image-selected");
 
-fileInput.addEventListener("change", function() {
+fileInput.addEventListener("change", function () {
   const file = fileInput.files[0];
   const reader = new FileReader();
-  reader.addEventListener("load", function() {
+  reader.addEventListener("load", function () {
     if (file) {
       imagePreview.style.display = "none";
       document.querySelector("#button-add-picture").style.display = "none";
@@ -254,32 +253,38 @@ const titlePictureCase = document.querySelector("#title-add-modal");
 const categoryPictureCase = document.querySelector("#category-of-item");
 
 async function postPicture() {
+  const file = fileInput.files[0];
+  const blob = new Blob([file], { type: file.type });
   const formDatas = new FormData();
-  formDatas.append("image", fileInput.files[0]);
+  formDatas.append("image", blob);
   formDatas.append("title", titlePictureCase.value);
-  formDatas.append("category", categoryPictureCase.options[categoryPictureCase.selectedIndex].value);
+  formDatas.append("category", categoryPictureCase.selectedIndex);
 
-  try {
-    const response = await fetch("http://localhost:5678/api/works", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(formDatas),
-    });
+  console.log(file, titlePictureCase.value, categoryPictureCase.selectedIndex)
+  const response = await fetch("http://localhost:5678/api/works", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formDatas,
+  });
 
-    if (response.ok) {
-      const newArticle = await response.json();
-      const newArticleHTML = `<figure class="item-gallery ${newArticle.categoryId}" data-id="${newArticle.id}">
+  if (response.ok) {
+    const newArticle = await response.json();
+    const newArticleHTML = `<figure class="item-gallery ${newArticle.categoryId}" data-id="${newArticle.id}">
                               <img src="${newArticle.imageUrl}" alt="${newArticle.title}">
                               <figcaption>${newArticle.title}</figcaption>
                             </figure>`;
-      gallery.insertAdjacentHTML("beforeend", newArticleHTML);
-    } else {
-      throw new Error("Erreur lors de la requête POST");
-    }
-  } catch (error) {
-    console.error(error);
+    const newArticleHTMLModal = `<figure class="item-modal" data-id="${newArticle.id}">
+                                  <img class="image-modal" src="${newArticle.imageUrl}" alt="${newArticle.title}">
+                                  <div class="delete-gallery-modal"><i class="trash-modal fa-solid fa-trash-can"></i></div>
+                                  <figcaption>éditer</figcaption>
+                                </figure>`;
+    gallery.insertAdjacentHTML("beforeend", newArticleHTML);
+    galleryModal.insertAdjacentHTML("beforeend", newArticleHTMLModal);
+    location.reload();
+  } else {
+    throw new Error("Erreur lors de la requête POST");
   }
 }
 
