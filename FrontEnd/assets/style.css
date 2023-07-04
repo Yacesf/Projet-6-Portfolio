@@ -108,12 +108,15 @@ section {
 	overflow: auto;
 	max-width: calc(100vw - 120px);
 	max-height: calc(100vh - 120px);
-	width: 630px;
 	border-radius: 10px;
 	padding: 30px 105px 50px;
 	background-color: white;
 }
-#modal-xmark {
+#modal-delete {
+	flex-direction: column;
+	width: 420px;
+}
+#modal-delete-xmark {
 	display: flex;
   justify-content: end;
   margin-bottom: 20px;
@@ -121,7 +124,12 @@ section {
   color: black;
 	cursor: pointer;
 }
-#title-modal {
+#modal-add-xmark {
+  font-size: 23px;
+  color: black;
+	cursor: pointer;
+}
+.title-modal {
 	text-align: center;
 	font-size: 26px;
 	margin-bottom: 55px;
@@ -129,9 +137,8 @@ section {
 #gallery-modal {
 	display: flex;
 	flex-wrap: wrap;
-	justify-content: space-between;
-	gap: 10px;
-	padding: 25px;
+	gap: 15px;
+	padding: 15px 0 40px 0;
 	margin-bottom: 40px;
 	border-bottom: solid 1px #B3B3B3;
 }
@@ -141,7 +148,7 @@ section {
 	position: relative;
 }
 .image-modal {
-	width: 100px;
+	width: 90px;
 }
 .delete-gallery-modal {
 	display: flex;
@@ -150,7 +157,7 @@ section {
 	background-color: black;
 	border-radius: 2px;
 	position: absolute;
-	right: 10px;
+	right: 5px;
 	top: 10px;
 	width: 25px;
 	height: 25px;
@@ -159,13 +166,13 @@ section {
 .trash-modal {
 	color: white;
 }
-#button-add-picture {
+#button-modal-add-picture {
 	display: flex;
 	margin: auto;
 	border: 1px;
 	font-size: 14px;
 	width: 185px;
-	height: 35px;
+	height: 40px;
 	border-radius: 60px;
 	background-color: #1D6154;
 	color: white;
@@ -177,6 +184,106 @@ section {
 	text-align: center;
 	color: #D65353;
 	font-size: 14px;
+}
+#modal-add {
+	flex-direction: column;
+	width: 420px;
+}
+#modal-add-quit {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	margin-bottom: 20px;
+}
+#back-to-modal-delete {
+	font-size: 23px;
+  color: black;
+	cursor: pointer;
+}
+#modal-add-container {
+	display: flex;
+	flex-direction: column;
+  padding: 15px 0 40px 0;
+  border-bottom: solid 1px #B3B3B3
+}
+#modal-add-picture {
+	width: 100%;
+  background-color: rgba(232, 241, 246, 1);
+  height: 170px;
+}
+#image-selected {
+	background-size: cover;
+  background-position: center center;
+  width: 150px;
+  height: 170px;
+  margin: auto;
+}
+#image-modal-add {
+	display: flex;
+	justify-content: center;
+	margin-top: 20px;
+	font-size: 70px;
+	color: #B3B3B3;
+}
+#button-add-picture {
+	display: flex;
+	margin: auto;
+	border: 1px;
+	font-size: 14px;
+	width: 175px;
+	height: 35px;
+	border-radius: 60px;
+	background-color: #B3B3B3;
+	color: rgba(232, 241, 246, 1);
+	align-items: center;
+	justify-content: center;
+	margin-top: 10px;
+	cursor: pointer;
+}
+#button-add-picture-input {
+	display: none;
+}
+#modal-add-picture p {
+	text-align: center;
+	font-size: 10px;
+	margin-top: 5px;
+}
+#modal-add-form {
+	display: flex;
+	flex-direction: column;
+	margin-top: 35px;
+}
+#modal-add-form label {
+	margin-bottom: 10px;
+	font-weight: 500;
+	font-size: 14px;
+}
+#title-add-modal {
+	height: 40px;
+	font-size: 15px;
+	border: none;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+	margin-bottom: 35px;
+}
+#category-of-item {
+	height: 40px;
+	font-size: 15px;
+	border: none;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+}
+#button-add-item {
+	display: flex;
+  margin: auto;
+  border: 1px;
+  font-size: 14px;
+  width: 175px;
+  height: 35px;
+  border-radius: 60px;
+  background-color: #B3B3B3;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  margin-top: 30px;
 }
 h1{
 	display: flex;
@@ -257,7 +364,6 @@ li a:hover {
 #portfolio h2 {
 	text-align: center;
 	margin-bottom: 1em;
-	margin-left: 3em;
 }
 #edit-gallery {
 	display: flex;

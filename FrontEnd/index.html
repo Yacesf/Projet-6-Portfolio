@@ -21,22 +21,58 @@
     />
   </head>
   <body>
-    <div id="edit">
-      <a href="#modal1" id="mode-edit" class="jsModal"><i class="fa-sharp fa-regular fa-pen-to-square"></i>
-        Mode édition</a>
+    <div id="edit" style="display: none">
+      <a href="#modal1" id="mode-edit" class="jsModal"
+        ><i class="fa-sharp fa-regular fa-pen-to-square"></i> Mode édition</a
+      >
       <button name="publish" type="button" id="button-publish">
         <p>publier les changements</p>
       </button>
     </div>
-    <aside id="modal1" class="modal" aria-hidden="true" aria-labelledby="title-modal" style="display: none;">
+    <aside
+      id="modal1"
+      class="modal"
+      aria-hidden="true"
+      aria-labelledby="title-modal"
+      style="display: none">
       <div class="modal-wrapper js-modal-stop">
-				<i id="modal-xmark" class="fa-solid fa-xmark"></i>
-        <h3 id="title-modal">Galerie photo</h3>
-				<div id="gallery-modal"></div>
-          <button name="addPicture" type="button" id="button-add-picture">
+        <div id="modal-delete" style="display: flex">
+          <i id="modal-delete-xmark" class="js-modal-xmark fa-solid fa-xmark"></i>
+          <h3 class="title-modal">Galerie photo</h3>
+          <div id="gallery-modal"></div>
+          <button name="modalAddPicture" type="button" id="button-modal-add-picture">
             Ajouter une photo
           </button>
           <p id="delete-gallery">Supprimer la galerie</p>
+        </div>
+        <div id="modal-add" style="display: none;">
+          <div id="modal-add-quit">
+            <i id="back-to-modal-delete" class="fa-solid fa-arrow-left"></i>
+            <i id="modal-add-xmark" class="js-modal-xmark fa-solid fa-xmark"></i>
+          </div>
+          <h3 class="title-modal">Ajout photo</h3>
+          <div id="modal-add-container">
+            <div id="modal-add-picture">
+              <img id="image-selected" style="display: none;"/>
+              <i id="image-modal-add" class="fa-sharp fa-regular fa-image"></i>
+              <input name="addPicture" type="file" id="button-add-picture-input"></input>
+              <label for="button-add-picture-input" id="button-add-picture">+ Ajouter une photo</label>
+              <p>jpg, png : 4mo max</p>
+            </div>
+            <form id="modal-add-form" action="#" method="post">
+              <label for="title-add-modal">Titre</label>
+              <input type="text" name="title" id="title-add-modal"/>
+              <label for="category-of-item">Catégorie</label>
+              <select name="category" id="category-of-item">
+                <option value="selectCategory">Selectionné une categorie</option>
+                <option value="objets">Objets</option>
+                <option value="appartements">Appartements</option>
+                <option value="hotesl&restaurants">Hotels & Restaurants</option>
+              </select>
+            </form>
+          </div>
+          <button name="addItem" type="button" id="button-add-item">Valider</button>
+        </div>
       </div>
     </aside>
     <div class="main-container">
@@ -55,8 +91,13 @@
         <section id="introduction">
           <figure>
             <img src="./assets/images/sophie-bluel.png" alt="" />
-            <a href="#modal1" id="edit-picture" class="jsModal"
-              ><i class="fa-sharp fa-regular fa-pen-to-square"></i>modifier</a
+            <a
+              href="#modal1"
+              id="edit-picture"
+              class="jsModal"
+              style="display: none"
+            >
+              <i class="fa-sharp fa-regular fa-pen-to-square"></i>modifier</a
             >
           </figure>
           <article>
@@ -81,7 +122,13 @@
         <section id="portfolio">
           <div id="h2-edit">
             <h2>Mes Projets</h2>
-            <a href="#modal1" id="edit-gallery" class="jsModal"><i class="fa-sharp fa-regular fa-pen-to-square"></i>modifier</a>
+            <a
+              href="#modal1"
+              id="edit-gallery"
+              class="jsModal"
+              style="display: none"
+              ><i class="fa-sharp fa-regular fa-pen-to-square"></i>modifier</a
+            >
           </div>
           <div class="filters"></div>
           <div class="gallery"></div>
@@ -95,7 +142,12 @@
             <label for="email">Email</label>
             <input type="email" name="email" id="email" />
             <label for="message">Message</label>
-            <textarea  name="message" id="message" cols="30" rows="10"></textarea>
+            <textarea
+              name="message"
+              id="message"
+              cols="30"
+              rows="10"
+            ></textarea>
             <input type="submit" value="Envoyer" />
           </form>
         </section>

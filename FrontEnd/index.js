@@ -3,161 +3,284 @@ categories.add({ id: 0, name: "Tous" });
 let filters = document.querySelector(".filters");
 let articles = [];
 const gallery = document.querySelector(".gallery");
-const galleryModal =document.querySelector("#gallery-modal")
-let modal = null
+const galleryModal = document.querySelector("#gallery-modal");
+let modal = null;
+const buttonModal = document.querySelectorAll(".jsModal");
 
 async function fetchWorks() {
   try {
     const response = await fetch("http://localhost:5678/api/works");
+    if (!response.ok) {
+      throw new Error("Erreur lors de la récupération des données");
+    }
     const data = await response.json();
     articles = data;
-    for (let article of articles) {
-      gallery.innerHTML += `<figure class="${article.categoryId}">
-                                                        <img src="${article.imageUrl}" alt="${article.title}">
-                                                        <figcaption>${article.title}</figcaption>
-                                                      </figure>`;
-    }
-    for (let article of articles) {
-      galleryModal.innerHTML += `<figure class="item-modal" data-id="${article.id}">
-                                                        <img class="image-modal" src="${article.imageUrl}" alt="${article.title}">
-                                                        <div class="delete-gallery-modal"><i class="trash-modal fa-solid fa-trash-can"></i></div><figcaption>éditer</figcaption>
-                                                      </figure>`;
-    }
-    for (let i = 0; i < 3 && i < articles.length; i++) {
-      const article = articles[i];
-      const category = article.category;
-      categories.add(category);
-    }
-    for (let category of categories) {
-      filters.innerHTML += `<div class="filter ${category.id}">${category.name}</div>`;
-    }
-    const categoryFilters = document.querySelectorAll(".filter");
-    categoryFilters[0].classList.add("filter__selected");
-    categoryFilters.forEach((filter) => {
-      filter.addEventListener("click", () => {
-        const categoryId = parseInt(filter.classList[1]);
-        categoryFilters.forEach((categoryFilters) =>
-          categoryFilters.classList.remove("filter__selected")
-        );
-        categoryFilters[categoryId].classList.add("filter__selected");
-        let filteredArticles;
-        if (categoryId === 0) {
-          filteredArticles = articles;
-        } else {
-          filteredArticles = articles.filter(
-            (article) => article.categoryId === categoryId
-          );
-        }
-        updateGallery(filteredArticles);
-      });
-    });
+    loadGallery();
+    loadGalleryModal();
+    loadCategories();
+    addFilterEventListeners();
   } catch (error) {
     console.error(error);
   }
 }
-fetchWorks();
 
-function updateGallery(filteredArticles) {
-  gallery.innerHTML = "";
-  for (let article of filteredArticles) {
-    gallery.innerHTML += `<figure class="${article.categoryId}">
+function loadGallery() {
+  for (let article of articles) {
+    gallery.innerHTML += `<figure class="item-gallery ${article.categoryId}" data-id="${article.id}">
                             <img src="${article.imageUrl}" alt="${article.title}">
                             <figcaption>${article.title}</figcaption>
                           </figure>`;
   }
 }
 
+function loadGalleryModal() {
+  for (let article of articles) {
+    galleryModal.innerHTML += `<figure class="item-modal" data-id="${article.id}">
+                                  <img class="image-modal" src="${article.imageUrl}" alt="${article.title}">
+                                  <div class="delete-gallery-modal"><i class="trash-modal fa-solid fa-trash-can"></i></div>
+                                  <figcaption>éditer</figcaption>
+                              </figure>`;
+  }
+}
+
+function loadCategories() {
+  for (let i = 0; i < 3 && i < articles.length; i++) {
+    const article = articles[i];
+    const category = article.category;
+    categories.add(category);}
+  for (let category of categories) {
+    filters.innerHTML += `<div class="filter ${category.id}">${category.name}</div>`;
+  }
+}
+
+function addFilterEventListeners() {
+  const categoryFilters = document.querySelectorAll(".filter");
+  categoryFilters[0].classList.add("filter__selected");
+  categoryFilters.forEach((filter) => {
+    filter.addEventListener("click", () => {
+      const categoryId = parseInt(filter.classList[1]);
+      categoryFilters.forEach((categoryFilter) => {
+        categoryFilter.classList.remove("filter__selected");
+      });
+      filter.classList.add("filter__selected");
+      let filteredArticles;
+      if (categoryId === 0) {
+        filteredArticles = articles;
+      } else {
+        filteredArticles = articles.filter(
+          (article) => article.categoryId === categoryId
+        );
+      }
+      updateGallery(filteredArticles);
+    });
+  });
+}
+
+fetchWorks();
+
+function updateGallery(filteredArticles) {
+  gallery.innerHTML = "";
+  for (let article of filteredArticles) {
+    gallery.innerHTML += `<figure class="${article.categoryId}">
+                              <img src="${article.imageUrl}" alt="${article.title}">
+                              <figcaption>${article.title}</figcaption>
+                            </figure>`;
+  }
+}
+
+const xmarks = document.querySelectorAll(".js-modal-xmark");
+
 const openModal = function (e) {
   e.preventDefault();
-  const targetId = e.target.getAttribute('href');
+  const targetId = e.target.getAttribute("href");
   const target = document.querySelector(targetId);
-  target.style.display = 'flex';
-  target.removeAttribute('aria-hidden');
-  target.setAttribute('aria-modal', 'true');
-  modal = target
-  modal.addEventListener("click", closeModal)
-  modal.querySelector('#modal-xmark').addEventListener('click', closeModal)
-  modal.querySelector('.js-modal-stop').addEventListener('click', stopPropagation)
-}
+  target.style.display = "flex";
+  target.removeAttribute("aria-hidden");
+  target.setAttribute("aria-modal", "true");
+  modal = target;
+  modal.addEventListener("click", closeModal);
+  Array.from(xmarks).forEach((xmark) => {
+    xmark.addEventListener("click", closeModal);
+  });
+  modal
+    .querySelector(".js-modal-stop")
+    .addEventListener("click", stopPropagation);
+};
 
 const closeModal = function (e) {
-  if (modal === null) return
+  if (modal === null) return;
   e.preventDefault();
-  modal.style.display = 'none';
-  modal.setAttribute('aria-hidden', 'true');
-  modal.removeAttribute('aria-modal');
-  modal.removeEventListener("click", closeModal)
-  modal.querySelector('#modal-xmark').removeEventListener('click', closeModal)
-  modal.querySelector('.js-modal-stop').removeEventListener('click', stopPropagation)
-  modal = null
-}
+  modal.style.display = "none";
+  modal.setAttribute("aria-hidden", "true");
+  modal.removeAttribute("aria-modal");
+  modal.removeEventListener("click", closeModal);
+  Array.from(xmarks).forEach((xmark) => {
+    xmark.removeEventListener("click", closeModal);
+  });
+  modal
+    .querySelector(".js-modal-stop")
+    .removeEventListener("click", stopPropagation);
+  modal = null;
+};
 
 const stopPropagation = function (e) {
-  e.stopPropagation()
+  e.stopPropagation();
+};
+
+buttonModal.forEach((a) => {
+  a.addEventListener("click", openModal);
+});
+
+const linkLogin = document.querySelector("#linkLogin");
+let isLoggedOut = localStorage.getItem("isLoggedOut") === "true";
+
+const logoutAction = (e) => {
+  e.preventDefault();
+
+  if (isLoggedOut === false) {
+    localStorage.removeItem("token");
+    localStorage.setItem("isLoggedOut", true);
+    location.reload();
+  } else {
+    isLoggedOut = true;
+    console.log("Déconnexion");
+    window.location.href = "login.html";
+  }
+};
+
+linkLogin.addEventListener("click", logoutAction);
+
+const edit = document.querySelector("#edit");
+const editPicture = document.querySelector("#edit-picture");
+const editGallery = document.querySelector("#edit-gallery");
+
+const updateLoginLink = () => {
+  if (localStorage.getItem("token")) {
+    linkLogin.innerHTML = "logout";
+    editPicture.style.display = "flex";
+    editGallery.style.display = "flex";
+    edit.style.display = "flex";
+  } else {
+    linkLogin.innerHTML = "login";
+    editPicture.style.display = "none";
+    editGallery.style.display = "none";
+    edit.style.display = "none";
+  }
+};
+
+const token = localStorage.getItem("token");
+console.log(token);
+
+galleryModal.addEventListener("click", async function (e) {
+  if (e.target.classList.contains(".trash-modal"))
+    console.log(e.target.classList.contains(".trash-modal"));
+  {
+    const figure = e.target.closest("figure");
+    const articleId = figure.dataset.id;
+    console.log(articleId);
+    try {
+      const response = await fetch(
+        `http://localhost:5678/api/works/${articleId}`,
+        {
+          method: "DELETE",
+          headers: {
+            accept: "*/*",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.ok) {
+        document.querySelector(`.item-modal[data-id="${articleId}"]`).remove()
+        document.querySelector(`.item-gallery[data-id="${articleId}"]`).remove()
+      } else {
+        throw new Error("La suppression a échoué.");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+});
+
+updateLoginLink();
+
+const modalAdd = document.querySelector("#modal-add");
+const modalDelete = document.querySelector("#modal-delete");
+const buttonModalAddPicture = document.querySelector("#button-modal-add-picture");
+
+function changeModal() {
+  modalDelete.style.display = "none";
+  modalAdd.style.display = "flex";
+}
+buttonModalAddPicture.addEventListener("click", changeModal);
+
+const backToModalDelete = document.querySelector("#back-to-modal-delete")
+
+function changeModalBack () {
+  modalAdd.style.display = "none";
+  modalDelete.style.display = "flex";
 }
 
-const loginUser = async (email, password) => {
-  const user = {
-    email: email,
-    password: password
-  };
+backToModalDelete.addEventListener("click", changeModalBack);
+
+const fileInput = document.querySelector("#button-add-picture-input");
+const imagePreview = document.querySelector("#image-modal-add");
+const imageSelected = document.querySelector("#image-selected");
+
+fileInput.addEventListener("change", function() {
+  const file = fileInput.files[0];
+  const reader = new FileReader();
+  reader.addEventListener("load", function() {
+    if (file) {
+      imagePreview.style.display = "none";
+      document.querySelector("#button-add-picture").style.display = "none";
+      document.querySelector("#modal-add-picture p").style.display = "none";
+      imageSelected.style.display = "flex";
+      imageSelected.src = reader.result;
+    } else {
+      imagePreview.style.display = "flex";
+      imageSelected.style.display = "none";
+      document.querySelector("#button-add-picture").style.display = "flex";
+      document.querySelector("#modal-add-picture p").style.display = "flex";
+    }
+  });
+  if (file) {
+    reader.readAsDataURL(file);
+  }
+});
+
+const buttonAddNewPicture = document.querySelector("#button-add-item");
+
+const titlePictureCase = document.querySelector("#title-add-modal");
+const categoryPictureCase = document.querySelector("#category-of-item");
+
+async function postPicture() {
+  const formDatas = new FormData();
+  formDatas.append("image", fileInput.files[0]);
+  formDatas.append("title", titlePictureCase.value);
+  formDatas.append("category", categoryPictureCase.options[categoryPictureCase.selectedIndex].value);
 
   try {
-    const response = await fetch("http://localhost:5678/api/users/login", {
+    const response = await fetch("http://localhost:5678/api/works", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(user),
+      body: JSON.stringify(formDatas),
     });
 
     if (response.ok) {
-      const result = await response.json();
-      console.log(result);
-      return result;
-    } else if (response.status === 401) {
-      throw new Error("Mot de passe incorrect");
-    } else if (response.status === 404) {
-      throw new Error("Utilisateur non trouvable");
+      const newArticle = await response.json();
+      const newArticleHTML = `<figure class="item-gallery ${newArticle.categoryId}" data-id="${newArticle.id}">
+                              <img src="${newArticle.imageUrl}" alt="${newArticle.title}">
+                              <figcaption>${newArticle.title}</figcaption>
+                            </figure>`;
+      gallery.insertAdjacentHTML("beforeend", newArticleHTML);
     } else {
-      throw new Error("Une erreur inattendue s'est produite");
+      throw new Error("Erreur lors de la requête POST");
     }
   } catch (error) {
     console.error(error);
-    throw error;
   }
-};
+}
 
-document.querySelectorAll('.jsModal').forEach(a => {
-  a.addEventListener('click', openModal);
-});
-
-const buttonLogin = document.getElementById("login");
-const caseEmail = document.querySelector("#email");
-const casePassword = document.querySelector("#password");
-const errorLogin = document.querySelector("#error-login");
-
-const updateLoginLink = () => {
-  const linkLogin = document.getElementById("linkLogin");
-  console.log(linkLogin);
-  if (localStorage.getItem("token")) {
-    linkLogin.innerHTML = "logout";
-  } else {
-    linkLogin.innerHTML = "login";
-  }
-};
-
-const loginResult = async (e) => {
-  e.preventDefault();
-  try {
-    const result = await loginUser(caseEmail.value, casePassword.value);
-    localStorage.setItem("token", result.token);
-    window.location.href = "index.html";
-  } catch (error) {
-    errorLogin.innerHTML = error.message;
-  }
-};
-
-buttonLogin.addEventListener("click", (e) => loginResult(e));
-
-updateLoginLink();
+buttonAddNewPicture.addEventListener("click", postPicture)
