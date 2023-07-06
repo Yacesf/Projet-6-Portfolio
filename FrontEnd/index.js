@@ -2,10 +2,8 @@ let categories = new Set();
 categories.add({ id: 0, name: "Tous" });
 let filters = document.querySelector(".filters");
 let articles = [];
-const gallery = document.querySelector(".gallery");
-const galleryModal = document.querySelector("#gallery-modal");
-let modal = null;
-const buttonModal = document.querySelectorAll(".jsModal");
+
+// Ajout de la galerie de façon dynamique //
 
 async function fetchWorks() {
   try {
@@ -15,33 +13,43 @@ async function fetchWorks() {
     }
     const data = await response.json();
     articles = data;
-    loadGallery();
-    loadGalleryModal();
+    updateWorksDOM(articles, "init");
     loadCategories();
-    addFilterEventListeners();
+    registerWorksFilter();
   } catch (error) {
     console.error(error);
   }
 }
 
-function loadGallery() {
+function updateWorksDOM(articles, type) {
+  const gallery = document.querySelector(".gallery");
+  const galleryModal = document.querySelector("#gallery-modal");
+
+  if(type === "init") {
   for (let article of articles) {
     gallery.innerHTML += `<figure class="item-gallery ${article.categoryId}" data-id="${article.id}">
                             <img src="${article.imageUrl}" alt="${article.title}">
                             <figcaption>${article.title}</figcaption>
                           </figure>`;
+    galleryModal.innerHTML += `<figure class="item-modal" data-id="${article.id}">
+                          <img class="image-modal" src="${article.imageUrl}" alt="${article.title}">
+                          <div class="delete-gallery-modal"><i class="trash-modal fa-solid fa-trash-can"></i></div>
+                          <figcaption>éditer</figcaption>
+                      </figure>`;
+  }
+}
+  if(type === "filter") {
+    gallery.innerHTML = "";
+  for (let article of articles) {
+    gallery.innerHTML += `<figure class="${article.categoryId}">
+                              <img src="${article.imageUrl}" alt="${article.title}">
+                              <figcaption>${article.title}</figcaption>
+                            </figure>`;
+  }
   }
 }
 
-function loadGalleryModal() {
-  for (let article of articles) {
-    galleryModal.innerHTML += `<figure class="item-modal" data-id="${article.id}">
-                                  <img class="image-modal" src="${article.imageUrl}" alt="${article.title}">
-                                  <div class="delete-gallery-modal"><i class="trash-modal fa-solid fa-trash-can"></i></div>
-                                  <figcaption>éditer</figcaption>
-                              </figure>`;
-  }
-}
+// Récuperation des filtres puis ajout des filtres pour la gallerie //
 
 function loadCategories() {
   for (let i = 0; i < 3 && i < articles.length; i++) {
@@ -54,7 +62,7 @@ function loadCategories() {
   }
 }
 
-function addFilterEventListeners() {
+function registerWorksFilter() {
   const categoryFilters = document.querySelectorAll(".filter");
   categoryFilters[0].classList.add("filter__selected");
   categoryFilters.forEach((filter) => {
@@ -72,23 +80,59 @@ function addFilterEventListeners() {
           (article) => article.categoryId === categoryId
         );
       }
-      updateGallery(filteredArticles);
+      updateWorksDOM(filteredArticles, "filter")
     });
   });
 }
 
 fetchWorks();
 
-function updateGallery(filteredArticles) {
-  gallery.innerHTML = "";
-  for (let article of filteredArticles) {
-    gallery.innerHTML += `<figure class="${article.categoryId}">
-                              <img src="${article.imageUrl}" alt="${article.title}">
-                              <figcaption>${article.title}</figcaption>
-                            </figure>`;
-  }
-}
+// Apparition du mode administrateur lors de la connexion //
 
+const linkLogin = document.querySelector("#linkLogin");
+let isLoggedOut = localStorage.getItem("isLoggedOut") === "true";
+
+const logoutAction = (e) => {
+  e.preventDefault();
+
+  if (isLoggedOut === false) {
+    localStorage.removeItem("token");
+    localStorage.setItem("isLoggedOut", true);
+    location.reload();
+  } else {
+    isLoggedOut = true;
+    console.log("Déconnexion");
+    window.location.href = "login.html";
+  }
+};
+
+linkLogin.addEventListener("click", logoutAction);
+
+const edit = document.querySelector("#edit");
+const editPicture = document.querySelector("#edit-picture");
+const editGallery = document.querySelector("#edit-gallery");
+
+const updateLoginLink = () => {
+  if (localStorage.getItem("token")) {
+    linkLogin.innerHTML = "logout";
+    editPicture.style.display = "flex";
+    editGallery.style.display = "flex";
+    edit.style.display = "flex";
+  } else {
+    linkLogin.innerHTML = "login";
+    editPicture.style.display = "none";
+    editGallery.style.display = "none";
+    edit.style.display = "none";
+  }
+};
+
+const token = localStorage.getItem("token");
+console.log(token);
+
+// Ajout de la modale (ouvrir, fermer, retour en arrière ect...)
+
+let modal = null;
+const buttonModal = document.querySelectorAll(".jsModal");
 const xmarks = document.querySelectorAll(".js-modal-xmark");
 
 const openModal = function (e) {
@@ -132,46 +176,30 @@ buttonModal.forEach((a) => {
   a.addEventListener("click", openModal);
 });
 
-const linkLogin = document.querySelector("#linkLogin");
-let isLoggedOut = localStorage.getItem("isLoggedOut") === "true";
+const modalAdd = document.querySelector("#modal-add");
+const modalDelete = document.querySelector("#modal-delete");
+const buttonModalAddPicture = document.querySelector(
+  "#button-modal-add-picture"
+);
 
-const logoutAction = (e) => {
-  e.preventDefault();
+function changeModal() {
+  modalDelete.style.display = "none";
+  modalAdd.style.display = "flex";
+}
+buttonModalAddPicture.addEventListener("click", changeModal);
 
-  if (isLoggedOut === false) {
-    localStorage.removeItem("token");
-    localStorage.setItem("isLoggedOut", true);
-    location.reload();
-  } else {
-    isLoggedOut = true;
-    console.log("Déconnexion");
-    window.location.href = "login.html";
-  }
-};
+const backToModalDelete = document.querySelector("#back-to-modal-delete");
 
-linkLogin.addEventListener("click", logoutAction);
+function changeModalBack() {
+  modalAdd.style.display = "none";
+  modalDelete.style.display = "flex";
+}
 
-const edit = document.querySelector("#edit");
-const editPicture = document.querySelector("#edit-picture");
-const editGallery = document.querySelector("#edit-gallery");
+backToModalDelete.addEventListener("click", changeModalBack);
 
-const updateLoginLink = () => {
-  if (localStorage.getItem("token")) {
-    linkLogin.innerHTML = "logout";
-    editPicture.style.display = "flex";
-    editGallery.style.display = "flex";
-    edit.style.display = "flex";
-  } else {
-    linkLogin.innerHTML = "login";
-    editPicture.style.display = "none";
-    editGallery.style.display = "none";
-    edit.style.display = "none";
-  }
-};
+// Fetch pour delete les articles de la galerie //
 
-const token = localStorage.getItem("token");
-console.log(token);
-
+const galleryModal = document.querySelector("#gallery-modal");
 galleryModal.addEventListener("click", async function (e) {
   if (e.target.classList.contains("trash-modal")) {
     const figure = e.target.closest("figure");
@@ -189,37 +217,22 @@ galleryModal.addEventListener("click", async function (e) {
         }
       );
       if (response.ok) {
-        document.querySelector(`.item-modal[data-id="${articleId}"]`).remove()
-        document.querySelector(`.item-gallery[data-id="${articleId}"]`).remove()
+        document.querySelector(`.item-modal[data-id="${articleId}"]`).remove();
+        document
+          .querySelector(`.item-gallery[data-id="${articleId}"]`)
+          .remove();
       } else {
         throw new Error("La suppression a échoué.");
       }
     } catch (error) {
+      const messageError = document.querySelector(".error-message").innerHTML = error.message;
+      console.log(messageError);
       console.error(error);
     }
   }
 });
 
-updateLoginLink();
-
-const modalAdd = document.querySelector("#modal-add");
-const modalDelete = document.querySelector("#modal-delete");
-const buttonModalAddPicture = document.querySelector("#button-modal-add-picture");
-
-function changeModal() {
-  modalDelete.style.display = "none";
-  modalAdd.style.display = "flex";
-}
-buttonModalAddPicture.addEventListener("click", changeModal);
-
-const backToModalDelete = document.querySelector("#back-to-modal-delete")
-
-function changeModalBack() {
-  modalAdd.style.display = "none";
-  modalDelete.style.display = "flex";
-}
-
-backToModalDelete.addEventListener("click", changeModalBack);
+// Apparition de l'image representant l'article ajouter a la gallerie //
 
 const fileInput = document.querySelector("#button-add-picture-input");
 const imagePreview = document.querySelector("#image-modal-add");
@@ -247,12 +260,13 @@ fileInput.addEventListener("change", function () {
   }
 });
 
-const buttonAddNewPicture = document.querySelector("#button-add-item");
+// Ajout du fetch permettant d'ajouter des articles //
 
+const buttonAddNewPicture = document.querySelector("#button-add-item");
 const titlePictureCase = document.querySelector("#title-add-modal");
 const categoryPictureCase = document.querySelector("#category-of-item");
 
-async function postPicture() {
+async function fetchPost() {
   const file = fileInput.files[0];
   const blob = new Blob([file], { type: file.type });
   const formDatas = new FormData();
@@ -260,7 +274,8 @@ async function postPicture() {
   formDatas.append("title", titlePictureCase.value);
   formDatas.append("category", categoryPictureCase.selectedIndex);
 
-  console.log(file, titlePictureCase.value, categoryPictureCase.selectedIndex)
+  console.log(file, titlePictureCase.value, categoryPictureCase.selectedIndex);
+
   const response = await fetch("http://localhost:5678/api/works", {
     method: "POST",
     headers: {
@@ -268,24 +283,46 @@ async function postPicture() {
     },
     body: formDatas,
   });
+  if (!response.ok) {
+    throw new Error("Une erreur inattendue s'est produite");
+  }
+  return response.json();
+}
 
-  if (response.ok) {
-    const newArticle = await response.json();
+// Function qui permet l'ajout dynamique des articles dans les galeries et reinitializer la modal d'ajout d'article //
+
+async function postPicture() {
+  try {
+    const result = await fetchPost();
+    const newArticle = await result;
+
+    const gallery = document.querySelector(".gallery");
     const newArticleHTML = `<figure class="item-gallery ${newArticle.categoryId}" data-id="${newArticle.id}">
                               <img src="${newArticle.imageUrl}" alt="${newArticle.title}">
                               <figcaption>${newArticle.title}</figcaption>
                             </figure>`;
+
     const newArticleHTMLModal = `<figure class="item-modal" data-id="${newArticle.id}">
                                   <img class="image-modal" src="${newArticle.imageUrl}" alt="${newArticle.title}">
                                   <div class="delete-gallery-modal"><i class="trash-modal fa-solid fa-trash-can"></i></div>
                                   <figcaption>éditer</figcaption>
                                 </figure>`;
+
     gallery.insertAdjacentHTML("beforeend", newArticleHTML);
     galleryModal.insertAdjacentHTML("beforeend", newArticleHTMLModal);
-    location.reload();
-  } else {
-    throw new Error("Erreur lors de la requête POST");
+    imagePreview.style.display = "flex";
+    imageSelected.style.display = "none";
+    document.querySelector("#button-add-picture").style.display = "flex";
+    document.querySelector("#modal-add-picture p").style.display = "flex";
+    titlePictureCase.value = "";
+    categoryPictureCase.selectedIndex = 0;
+
+  } catch (error) {
+    const messageError = document.querySelector(".error-message").innerHTML = error.message;
+    console.log(messageError);
   }
 }
 
-buttonAddNewPicture.addEventListener("click", postPicture)
+buttonAddNewPicture.addEventListener("click", postPicture);
+
+updateLoginLink();
